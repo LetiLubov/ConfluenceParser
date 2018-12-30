@@ -8,12 +8,15 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import javax.swing.*;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.IOException;
 
 public class Controller {
     static String folderPath = "/media/lyubov/240CF7E50CF7B042/Jet/conf/";
     static final String myResultDir = "dirWithResults/";
+    private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
     public void doStaff() {
         JFileChooser fileChooser = new JFileChooser(folderPath);
@@ -58,6 +61,48 @@ public class Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
+
+    public boolean checkFileFromDisk(File selectedFile){
+        Document document;
+        try {
+            document = Jsoup.parse(selectedFile, "UTF-8");
+            pcs.firePropertyChange("newDocument", null, "");
+        } catch (IOException e) {
+            return false;
+        }
+        Elements elements = document.select("div.wiki-content");
+
+        if (elements == null){
+            pcs.firePropertyChange("newDocument", null, "");
+            return false;
+        }
+
+        if (elements.size() > 0){
+            pcs.firePropertyChange("newDocument", null, document.title());
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Задать слушателя изменения свойства с именем <code>propertyName</code>.
+     *
+     * @param propertyName
+     * @param listener
+     */
+    public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+        pcs.addPropertyChangeListener(propertyName, listener);
+    }
+
+    /**
+     * Задать слушателя изменения свойств.
+     *
+     * @param listener
+     */
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        pcs.addPropertyChangeListener(listener);
+    }
+
+
 }

@@ -11,17 +11,17 @@ public class GrayShadesColorResolver implements ColorResolver {
 
     @Override
     public int getDefaultColor() {
-        return 0x454545;
+        return 0x262626;
     }
 
     @Override
     public int getPressedColor() {
-        return 0x9E9E9E;
+        return 0xb3b3b3;
     }
 
     @Override
     public int getSelectedColor() {
-        return 0x454545;
+        return 0x262626;
     }
 
     @Override
@@ -36,11 +36,11 @@ public class GrayShadesColorResolver implements ColorResolver {
 
     @Override
     public int getRolloverColor() {
-        return 0x6B6B6B;
+        return 0x666666;
     }
 
     @Override
     public int getRolloverSelectedColor() {
-        return 0x6B6B6B;
+        return 0x666666;
     }
 }

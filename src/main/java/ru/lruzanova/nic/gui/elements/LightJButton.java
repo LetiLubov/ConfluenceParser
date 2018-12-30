@@ -25,12 +25,17 @@ public class LightJButton extends JButton {
     private final String text;
 
     public LightJButton(Image image, ColorResolver generalColorResolver) {
-        this(null, image, generalColorResolver);
+        this.templateImage = image;
+        this.colorResolver = generalColorResolver;
+        this.textColorResolver = colorResolver;
+        this.text = "";
+        defaultSettings();
     }
 
     public LightJButton(String text, TextColorResolver textColorResolver) {
-        this(text, null, null);
         this.textColorResolver = textColorResolver;
+        this.text = text;
+        defaultSettings();
     }
 
     public LightJButton(String text, Image image, ColorResolver colorResolver) {
@@ -66,27 +71,26 @@ public class LightJButton extends JButton {
         }
 
         if (text != null && textColorResolver != null) {
-            final TextBehaviorResolver textBehaviorResolver = new DefaultTextBehaviorResolver(text, textColorResolver);
-            this.setText(textBehaviorResolver.getDefaultText());
+            this.setText(text);
             this.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseEntered(MouseEvent e) {
-                    setText(textBehaviorResolver.getMouseEnteredText());
+                    LightJButton.this.setForeground(new Color(textColorResolver.getRolloverColor()));
                 }
 
                 @Override
                 public void mouseExited(MouseEvent e) {
-                    setText(textBehaviorResolver.getDefaultText());
+                    LightJButton.this.setForeground(new Color(textColorResolver.getDefaultColor()));
                 }
 
                 @Override
                 public void mousePressed(MouseEvent e) {
-                    setText(textBehaviorResolver.getMousePressedText());
+                    LightJButton.this.setForeground(new Color(textColorResolver.getPressedColor()));
                 }
 
                 @Override
                 public void mouseReleased(MouseEvent e) {
-                    setText(textBehaviorResolver.getMouseEnteredText());
+                    LightJButton.this.setForeground(new Color(textColorResolver.getDefaultColor()));
                 }
             });
         }
