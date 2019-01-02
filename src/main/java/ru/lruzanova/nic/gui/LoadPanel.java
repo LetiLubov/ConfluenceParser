@@ -84,8 +84,33 @@ public class LoadPanel extends JPanel {
         buttonGroup.add(url);
         buttonGroup.add(fromDisk);
         fromDisk.setSelected(true);
+        urlValue.setEditable(false);
         url.setEnabled(false);
-        urlValue.setEnabled(false);
+//        url.addChangeListener(new ChangeListener() {
+//            @Override
+//            public void stateChanged(ChangeEvent e) {
+//                if (url.isSelected() && !urlValue.getText().equals("")){
+//
+//                 controller.checkUrl(urlValue.getText());
+//                }
+//            }
+//        });
+//        urlValue.getDocument().addDocumentListener(new DocumentListener() {
+//            @Override
+//            public void insertUpdate(DocumentEvent e) {
+//                controller.checkUrl(urlValue.getText());
+//            }
+//
+//            @Override
+//            public void removeUpdate(DocumentEvent e) {
+//                controller.checkUrl(urlValue.getText());
+//            }
+//
+//            @Override
+//            public void changedUpdate(DocumentEvent e) {
+//                controller.checkUrl(urlValue.getText());
+//            }
+//        });
     }
 
     private void place() {
@@ -147,7 +172,7 @@ public class LoadPanel extends JPanel {
         return selectedDocument;
     }
 
-    public String getPathToDoc(){
+    public String getPathToDoc() {
         String text = fileValue.getText();
 //        return text.substring(0, text.lastIndexOf('/'));
         return fileValue.getText();

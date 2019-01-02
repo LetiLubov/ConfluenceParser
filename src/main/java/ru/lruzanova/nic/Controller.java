@@ -18,7 +18,19 @@ public class Controller {
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
     public SettingContext context;
-
+    public Document checkUrl(String url){
+//        Document doc;
+//        try {
+//            doc = Jsoup.connect(url).get();
+//            doc.select("#main-content");
+//            String title = doc.title();
+//            FileUtils.writeStringToFile(new File("qwe"), doc.outerHtml(), "UTF-8");
+//            return doc;
+//        } catch (IOException e) {
+//
+//        }
+        return null;
+    }
     public Document checkFileFromDisk(File selectedFile) {
         Document document;
         try {

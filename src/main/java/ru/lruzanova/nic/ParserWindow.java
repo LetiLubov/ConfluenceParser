@@ -13,7 +13,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.io.File;
 
 public class ParserWindow extends JFrame implements SettingContext {
     private static final String TITLE = "Confluence Ripper by Lyubov Crutch Power Inc.";
