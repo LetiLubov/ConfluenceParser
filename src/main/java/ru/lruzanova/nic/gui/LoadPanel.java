@@ -1,5 +1,6 @@
 package ru.lruzanova.nic.gui;
 
+import org.jsoup.nodes.Document;
 import ru.lruzanova.nic.Controller;
 import ru.lruzanova.nic.gui.elements.LightJButton;
 import ru.lruzanova.nic.gui.elements.color.GrayShadesColorResolver;
@@ -20,11 +21,11 @@ public class LoadPanel extends JPanel {
     private JTextField fileValue;
     private JButton selectDir;
     private JButton fileFineOrNot;
-    private JButton urlFineOrNot;
     private Controller controller;
     private Icon valid;
     private Icon invalid;
     private Icon question;
+    private Document selectedDocument;
 
     public LoadPanel(Controller controller) {
         this.controller = controller;
@@ -54,8 +55,9 @@ public class LoadPanel extends JPanel {
         urlValue = new JTextField();
         fromDisk = new JRadioButton("С диска");
         fileValue = new JTextField();
+        fileValue.setEditable(false);
         fileFineOrNot = getCheckResButton();
-        urlFineOrNot = getCheckResButton();
+        setIconCheckResButton(false);
         try {
             BufferedImage bufferedImage = ImageIO.read(ClassLoader.getSystemResource("open.png"));
             selectDir = new LightJButton(bufferedImage, new GrayShadesColorResolver());
@@ -71,7 +73,9 @@ public class LoadPanel extends JPanel {
                 if (fileChooser.showOpenDialog(LoadPanel.this) == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = fileChooser.getSelectedFile();
                     fileValue.setText(selectedFile.toString());
-                    setIconCheckResButton(fileFineOrNot, controller.checkFileFromDisk(selectedFile));
+                    selectedDocument = controller.checkFileFromDisk(selectedFile);
+                    setIconCheckResButton(selectedDocument != null);
+
                 }
             }
         });
@@ -91,7 +95,10 @@ public class LoadPanel extends JPanel {
         layout.setAutoCreateGaps(true);
 
         layout.setHorizontalGroup(layout.createParallelGroup()
-                .addComponent(loadLabel)
+                .addGroup(layout.createSequentialGroup()
+                        .addComponent(loadLabel)
+                        .addComponent(fileFineOrNot)
+                )
                 .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup()
                                 .addComponent(url)
@@ -103,23 +110,20 @@ public class LoadPanel extends JPanel {
                                         .addComponent(fileValue)
                                         .addComponent(selectDir))
                         )
-                        .addGroup(layout.createParallelGroup()
-                                .addComponent(urlFineOrNot)
-                                .addComponent(fileFineOrNot))
                 )
 
         );
         layout.setVerticalGroup(layout.createSequentialGroup()
-                .addComponent(loadLabel)
+                .addGroup(layout.createBaselineGroup(true, false)
+                        .addComponent(loadLabel)
+                        .addComponent(fileFineOrNot))
                 .addGroup(layout.createBaselineGroup(true, true)
                         .addComponent(url)
-                        .addComponent(urlValue)
-                        .addComponent(urlFineOrNot))
+                        .addComponent(urlValue))
                 .addGroup(layout.createBaselineGroup(true, true)
                         .addComponent(fromDisk)
                         .addComponent(fileValue)
-                        .addComponent(selectDir)
-                        .addComponent(fileFineOrNot))
+                        .addComponent(selectDir))
 
         );
     }
@@ -132,11 +136,20 @@ public class LoadPanel extends JPanel {
         button.setOpaque(true);
         button.setContentAreaFilled(false);
         button.setFocusPainted(false);
-        button.setIcon(question);
         return button;
     }
 
-    private void setIconCheckResButton(JButton button, boolean flag) {
-        button.setIcon(flag ? valid : invalid);
+    private void setIconCheckResButton(boolean flag) {
+        fileFineOrNot.setIcon(flag ? valid : invalid);
+    }
+
+    public Document getDocument() {
+        return selectedDocument;
+    }
+
+    public String getPathToDoc(){
+        String text = fileValue.getText();
+//        return text.substring(0, text.lastIndexOf('/'));
+        return fileValue.getText();
     }
 }

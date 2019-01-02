@@ -22,6 +22,8 @@ public class SettingsPanel extends JPanel {
     private JCheckBox deleteColorText;
     private JButton setHtmlBody;
     private Controller controller;
+    private String textBefore;
+    private String textAfter;
 
     public SettingsPanel(Controller controller) {
         this.controller = controller;
@@ -54,7 +56,8 @@ public class SettingsPanel extends JPanel {
                         "Структура документа", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null,
                         new Object[]{"Сохранить", "Отмена"}, "Сохранить");
                 if (optionDialog == JOptionPane.OK_OPTION) {
-
+                    textBefore = message.getBeginText();
+                    textAfter = message.getEndText();
                 }
             }
         });
@@ -64,12 +67,12 @@ public class SettingsPanel extends JPanel {
         controller.addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
-                if (evt.getPropertyName().equals("newDocument")){
+                if (evt.getPropertyName().equals("newDocument")) {
                     Object newValue = evt.getNewValue();
                     String text = newValue.toString();
                     originalName.setText(text);
                     if (useCyrilicConverter.isSelected()) {
-                      text = TranslitUtil.convert(text);
+                        text = TranslitUtil.convert(text);
                     }
                     newName.setText(text);
                 }
@@ -111,6 +114,26 @@ public class SettingsPanel extends JPanel {
                 .addComponent(setHtmlBody)
 
         );
+    }
 
+    public boolean needConvertCyrilic() {
+        return useCyrilicConverter.isSelected();
+    }
+
+    public boolean needRemoveColorText() {
+        return deleteColorText.isSelected();
+    }
+
+
+    public String getTextBeforeContain() {
+        return textBefore == null ? DocumentStructurePanel.begin : textBefore;
+    }
+
+    public String getTextAfterContain() {
+        return textAfter == null ? DocumentStructurePanel.end : textAfter;
+    }
+
+    public String getNewName() {
+        return newName.getText();
     }
 }

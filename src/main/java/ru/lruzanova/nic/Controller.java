@@ -14,86 +14,33 @@ import java.io.File;
 import java.io.IOException;
 
 public class Controller {
-    static String folderPath = "/media/lyubov/240CF7E50CF7B042/Jet/conf/";
-    static final String myResultDir = "dirWithResults/";
+
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
-    public void doStaff() {
-        JFileChooser fileChooser = new JFileChooser(folderPath);
-        if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-            File selectedFile = fileChooser.getSelectedFile();
-            try {
-                Document document = Jsoup.parse(selectedFile, "UTF-8");
-                Elements wikiContent = document.select("div.wiki-content");
-                try {
-                    String title = TranslitUtil.convert(document.title());
-                    String pathToResult = folderPath + myResultDir + title + "/";
-                    new File(pathToResult).mkdirs();
-                    final File f = new File(pathToResult + title + ".html");
-                    Elements imges = wikiContent.select("img");
-                    new File(pathToResult + "img/").mkdirs();
-                    for (Element img : imges) {
-                        renameAndSetLoc(img, pathToResult + "img/");
-                    }
-                    FileUtils.writeStringToFile(f, wikiContent.outerHtml(), "UTF-8");
-                } catch (IOException e) {
-                }
-                System.out.println();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+    public SettingContext context;
 
-    private void renameAndSetLoc(Element element, String dirPath) {
-        String src = element.attr("src");
-        String imgName = src.substring(src.lastIndexOf("/") + 1);
-        String attributeValue = TranslitUtil.convert(imgName);
-        element.attr("src", "img/" + attributeValue);
-        //get file name from image path
-        String strImagePath = src.substring(src.indexOf("/") + 1);
-
-        try {
-            //open the stream from URL
-            File file = new File(folderPath + strImagePath);
-            File myImage = new File(dirPath + attributeValue);
-            FileUtils.copyFile(file, myImage);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public boolean checkFileFromDisk(File selectedFile){
+    public Document checkFileFromDisk(File selectedFile) {
         Document document;
         try {
             document = Jsoup.parse(selectedFile, "UTF-8");
             pcs.firePropertyChange("newDocument", null, "");
         } catch (IOException e) {
-            return false;
+            return null;
         }
         Elements elements = document.select("div.wiki-content");
 
-        if (elements == null){
+        if (elements == null) {
             pcs.firePropertyChange("newDocument", null, "");
-            return false;
+            return null;
         }
 
-        if (elements.size() > 0){
+        if (elements.size() > 0) {
             pcs.firePropertyChange("newDocument", null, document.title());
-            return true;
+            return document;
         }
-        return false;
+        return null;
     }
 
-    /**
-     * Задать слушателя изменения свойства с именем <code>propertyName</code>.
-     *
-     * @param propertyName
-     * @param listener
-     */
-    public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-        pcs.addPropertyChangeListener(propertyName, listener);
-    }
 
     /**
      * Задать слушателя изменения свойств.
@@ -104,5 +51,63 @@ public class Controller {
         pcs.addPropertyChangeListener(listener);
     }
 
+    public void save(SettingContext context) {
+
+        this.context = context;
+        Document document = context.getDocument();
+
+        Elements wikiContent = document.select("div.wiki-content");
+        try {
+            String pathToResult = context.getSaveDirPath() + "/" + context.getNewFileName() + "/";
+            new File(pathToResult).mkdirs();
+            final File f = new File(pathToResult + context.getNewFileName() + ".html");
+            saveImages(wikiContent, pathToResult);
+
+            if (context.needRemoveColorText()){
+                removeColorText(wikiContent);
+            }
+
+            String data = wikiContent.outerHtml();
+            FileUtils.writeStringToFile(f, context.getTextBeforeContain() + data + context.getTextAfterContain(), "UTF-8");
+            JOptionPane.showMessageDialog(null, "Сохранилося");
+        } catch (IOException e) {
+        }
+
+    }
+
+    private void saveImages(Elements wikiContent, String pathToResult) {
+        Elements imges = wikiContent.select("img");
+        new File(pathToResult + "img/").mkdirs();
+        for (Element img : imges) {
+            saveImg(img, pathToResult + "img/");
+        }
+    }
+
+    private void saveImg(Element element, String dirPath) {
+        String src = element.attr("src");
+
+        String imgName = src.substring(src.lastIndexOf("/") + 1);
+        String attributeValue = context.needConvertCyrilic() ? TranslitUtil.convert(imgName) : imgName;
+        element.attr("src", "img/" + attributeValue);
+        //get file name from image path
+
+        try {
+            //open the stream from URL
+            File file = new File(context.getPathToImg());
+            File myImage = new File(dirPath + attributeValue);
+            FileUtils.copyFile(file, myImage);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void removeColorText(Elements wikiContent){
+        Elements elements = wikiContent.select("span");
+        for (Element element : elements) {
+            if (!element.toString().contains("rgb(0,0,0)")){
+                element.remove();
+            }
+        }
+    }
 
 }

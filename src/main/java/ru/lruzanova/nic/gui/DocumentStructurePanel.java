@@ -3,7 +3,7 @@ package ru.lruzanova.nic.gui;
 import javax.swing.*;
 
 public class DocumentStructurePanel extends JPanel {
-    private final String begin =
+    public static final String begin =
             "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">\n" +
             "<HTML>\n" +
             "<HEAD>\n" +
@@ -15,7 +15,7 @@ public class DocumentStructurePanel extends JPanel {
             "<BODY BGCOLOR=\"#ffffff\">";
     private JTextArea beginPart;
     private JLabel content;
-    private final String end = "</BODY>\n" +
+    public static final String end = "</BODY>\n" +
             "</HTML>";
     private JTextArea endPart;
 

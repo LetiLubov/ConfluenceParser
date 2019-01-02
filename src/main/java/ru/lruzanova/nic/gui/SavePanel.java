@@ -24,7 +24,7 @@ public class SavePanel extends JPanel {
         saveLabel = new JLabel("Каталог для сохранения");
         path = new JTextField();
         path.setColumns(15);
-
+        path.setEditable(false);
         try {
             BufferedImage bufferedImage = ImageIO.read(ClassLoader.getSystemResource("open.png"));
             selectDir = new LightJButton(bufferedImage, new GrayShadesColorResolver());
@@ -34,11 +34,11 @@ public class SavePanel extends JPanel {
         selectDir.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JFileChooser fileChooser =new JFileChooser();
+                JFileChooser fileChooser = new JFileChooser();
                 fileChooser.setCurrentDirectory(new java.io.File("."));
                 fileChooser.setDialogTitle("Выберите файл");
                 fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-                if (fileChooser.showOpenDialog(SavePanel.this) == JFileChooser.APPROVE_OPTION){
+                if (fileChooser.showOpenDialog(SavePanel.this) == JFileChooser.APPROVE_OPTION) {
                     path.setText(fileChooser.getSelectedFile().toString());
                 }
             }
@@ -63,5 +63,9 @@ public class SavePanel extends JPanel {
                 .addComponent(selectDir)
         );
 
+    }
+
+    public String getSavePath() {
+        return path.getText();
     }
 }
